@@ -10,8 +10,8 @@ def get_lat_lng(place_name):
     return location['lat'], location['lng']
 
 # Function to get the e-waste facilities near a specific location
-def get_nearby_e_waste_facilities(latitude, longitude):
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={latitude},{longitude}&radius=5000&type=point_of_interest&keyword=e-waste%20facility&key=YOUR_API_KEY"
+def get_nearby_e_waste_facilities(city):
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={city}&radius=5000&type=point_of_interest&keyword=e-waste%20facility&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLMY"
     response = requests.get(url)
     data = response.json()
     return data
@@ -25,8 +25,7 @@ place_name = st.text_input('Enter a place name (e.g., city, address):')
 # Display the nearby e-waste facilities based on the input place name
 if st.button('Find E-Waste Facilities'):
     try:
-        latitude, longitude = get_lat_lng(place_name)
-        facilities = get_nearby_e_waste_facilities(latitude, longitude)
+        facilities = get_nearby_e_waste_facilities(place_name)
         for facility in facilities['results']:
             st.write(facility['name'])
     except IndexError:
