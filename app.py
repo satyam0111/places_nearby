@@ -3,7 +3,7 @@ import requests
 
 # Function to get the latitude and longitude of a place using Google Maps Geocoding API
 def get_lat_lng(place_name):
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={place_name}&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLMY"
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={place_name}&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLM"
     response = requests.get(url)
     data = response.json()
     location = data['results'][0]['geometry']['location']
@@ -11,7 +11,7 @@ def get_lat_lng(place_name):
 
 # Function to get the e-waste facilities near a specific location
 def get_nearby_e_waste_facilities(city):
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={city}&radius=5000&type=point_of_interest&keyword=e-waste%20facility&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLMY"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={city}&radius=5000&type=point_of_interest&keyword=e-waste%20facility&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLM"
     response = requests.get(url)
     data = response.json()
     return data
