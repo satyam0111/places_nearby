@@ -1,32 +1,49 @@
 import streamlit as st
 import requests
+import pandas as pd
 
-# Function to get the latitude and longitude of a place using Google Maps Geocoding API
-def get_lat_lng(place_name):
-    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={place_name}&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLM"
-    response = requests.get(url)
+# Function to get nearby recycling centers using Google Places API
+def get_nearby_recycling_centers(api_key, location, radius=5000, keyword="recycling center"):
+    base_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+    params = {
+        "location": location,
+        "radius": radius,
+        "keyword": keyword,
+        "key": api_key,
+    }
+
+    response = requests.get(base_url, params=params)
     data = response.json()
-    location = data['results'][0]['geometry']['location']
-    return location['lat'], location['lng']
 
-# Function to get the e-waste facilities near a specific location
-def get_nearby_e_waste_facilities(city):
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={city}&radius=5000&type=point_of_interest&keyword=e-waste%20facility&key=AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLM"
-    response = requests.get(url)
-    data = response.json()
-    return data
+    if "results" in data:
+        return data["results"]
+    else:
+        return None
 
-# Streamlit interface
-st.title('Nearby E-Waste Facilities')
+# Streamlit app
+def main():
+    st.title("Nearby Recycling Centers Finder")
 
-# Get the place name from the user
-place_name = st.text_input('Enter a place name (e.g., city, address):')
+    # Input API key and location
+    api_key = "AIzaSyDZAvo3v6mDbEEvNPO_N_yRYAPZ_lKPpLM"
+    location = st.text_input("Enter your location (latitude,longitude):")
 
-# Display the nearby e-waste facilities based on the input place name
-if st.button('Find E-Waste Facilities'):
-    try:
-        facilities = get_nearby_e_waste_facilities(place_name)
-        for facility in facilities['results']:
-            st.write(facility['name'])
-    except IndexError:
-        st.write('Location not found. Please enter a valid place name.')
+    if not api_key or not location:
+        st.warning("Please location.")
+        st.stop()
+
+    # Get nearby recycling centers
+    recycling_centers = get_nearby_recycling_centers(api_key, location)
+
+    if recycling_centers:
+        # Display the results in a DataFrame
+        df = pd.json_normalize(recycling_centers)
+        st.dataframe(df)
+
+        # Display the locations on a map
+        st.map(df[["geometry.location.lat", "geometry.location.lng"]])
+    else:
+        st.warning("No recycling centers found nearby.")
+
+if __name__ == "__main__":
+    main()
